@@ -30,7 +30,7 @@ jobs:
           # Source distribution
           python setup.py sdist
           # Built distribution (wheel)
-          python setup.py bdist_wheel $<SETUP_BDIST_WHEEL_ARGS>
+          python setup.py bdist_wheel --plat-name x86_64
           # Install locally to support tests
           pip install -e .
           for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
