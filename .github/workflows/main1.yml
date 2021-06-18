@@ -75,7 +75,7 @@ jobs:
             for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
                 auditwheel repair $whl -w ./dist/ --plat linux_x86_64
                 rm $whl
-            done
+            done'
     - name: Upload dist
       uses: actions/upload-artifact@v2
       with:
