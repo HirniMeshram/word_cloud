@@ -17,16 +17,21 @@ jobs:
     name: "Build and Deploy (x86_64 ${{ matrix.pyver }})"
     strategy:
       matrix:
-        pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
+        pyver: ['3.6', '3.7', '3.8', '3.9']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Build manylinux wheels x86_64
+      - name: Setting up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
         run: |
           python --version
           python -m pip install --disable-pip-version-check --upgrade pip
           pip install -U -r requirements.txt -r requirements-dev.txt
+      - name: Build manylinux wheels x86_64
+        run: |
           python -c "import numpy; print('numpy %s' % numpy.__version__)"
           # Source distribution
           python setup.py sdist
@@ -63,19 +68,22 @@ jobs:
       run: |
             docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
             ${{ env.img }} \
-            bash -exc 'python --version
-            python -m pip install --disable-pip-version-check --upgrade pip
-            pip install -U -r requirements.txt -r requirements-dev.txt
-            python -c "import numpy; print('numpy %s' % numpy.__version__)"
+            bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
+            source .env/bin/activate && \
+            python --version && \
+            python -m pip install --disable-pip-version-check --upgrade pip && \
+            pip install -U -r requirements.txt -r requirements-dev.txt && \
+            python -c "import numpy; print('numpy %s' % numpy.__version__)" && \
             # Built distribution (wheel)
-            python setup.py bdist_wheel
+            python setup.py bdist_wheel && \
             # Install locally to support tests
-            pip install -e .
-            pip install auditwheel
+            pip install -e . && \
+            pip install auditwheel && \
             for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
                 auditwheel repair $whl -w ./dist/ --plat linux_x86_64
                 rm $whl
-            done'
+            done && \
+            deactivate'
     - name: Upload dist
       uses: actions/upload-artifact@v2
       with:
