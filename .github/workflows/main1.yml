@@ -30,7 +30,7 @@ jobs:
           # Source distribution
           python setup.py sdist
           # Built distribution (wheel)
-          python setup.py bdist_wheel --plat-name x86_64
+          python setup.py bdist_wheel --plat-name linux_x86_64
           # Install locally to support tests
           pip install -e .
           pip install auditwheel
