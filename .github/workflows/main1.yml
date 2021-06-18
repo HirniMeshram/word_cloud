@@ -24,7 +24,7 @@ jobs:
       - name: Setting up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.pyver }}
       - name: Install dependencies
         run: |
           python --version
@@ -78,7 +78,7 @@ jobs:
             python setup.py bdist_wheel && \
             pip install -e . && \
             pip install auditwheel && \
-            for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
+            for whl in dist/*$(python -c \"import wheel.pep425tags as w; print(w.get_platform())\").whl; do
                 auditwheel repair $whl -w ./dist/ --plat linux_aarch_64
                 rm $whl
             done && \
