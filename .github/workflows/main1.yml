@@ -67,7 +67,7 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.pyver }}
-        architecture: aarch64
+        architecture: linux_aarch64
     - uses: docker://quay.io/pypa/manylinux2014_aarch64
       with:
         args: |
