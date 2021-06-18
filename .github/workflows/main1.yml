@@ -84,7 +84,7 @@ jobs:
             pip install -e . && \
             pip install auditwheel && \
             for whl in dist/*$(python -c \"import wheel.pep425tags as w; print(w.get_platform())\").whl; do
-                auditwheel repair $whl -w ./dist/ --plat linux_aarch_64;
+                auditwheel repair $whl -w ./dist/ --plat linux_aarch64;
                 rm $whl;
             done && \
             deactivate"
