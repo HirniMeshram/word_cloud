@@ -68,9 +68,9 @@ jobs:
       run: |
             docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
             ${{ env.img }} \
-            bash -exc '${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
-            source .env/bin/activate && \
-            python --version && \
+            bash -exc 'python --version && \
+            yum install epel-release && \
+            yum install python-pip && \
             python -m pip install --disable-pip-version-check --upgrade pip && \
             pip install -U -r requirements.txt -r requirements-dev.txt && \
             python -c "import numpy; print('numpy %s' % numpy.__version__)" && \
@@ -81,8 +81,7 @@ jobs:
             for whl in dist/*$(python -c \"import wheel.pep425tags as w; print(w.get_platform())\").whl; do
                 auditwheel repair $whl -w ./dist/ --plat linux_aarch_64
                 rm $whl
-            done && \
-            deactivate'
+            done'
     - name: Upload dist
       uses: actions/upload-artifact@v2
       with:
