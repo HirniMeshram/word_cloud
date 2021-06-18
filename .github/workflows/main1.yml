@@ -66,7 +66,8 @@ jobs:
     - name: Setting up Python ${{ matrix.pyver }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.pyver }}         
+        python-version: ${{ matrix.pyver }}
+        architecture: aarch64
     - uses: docker://quay.io/pypa/manylinux2014_aarch64
       with:
         args: |
