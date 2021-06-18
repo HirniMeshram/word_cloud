@@ -67,8 +67,8 @@ jobs:
       with:
         args: |
             bash -c "python --version && \
-            yum install epel-release && \
-            yum install python-pip && \
+            yum install epel-release -y && \
+            yum install python-pip -y && \
             python -m pip install --disable-pip-version-check --upgrade pip && \
             pip install -U -r requirements.txt -r requirements-dev.txt && \
             python -c "import numpy; print('numpy %s' % numpy.__version__)" && \
