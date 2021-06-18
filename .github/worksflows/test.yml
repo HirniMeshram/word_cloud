@@ -1,0 +1,36 @@
+name: Linux Wheel
+
+on:
+  push:
+    branches:
+      - 'master'
+      
+jobs:
+  build-manylinux:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2.3.4
+
+    - name: Build manylinux wheels
+      run: |
+        python --version
+        python -m pip install --disable-pip-version-check --upgrade pip
+        pip install -U -r requirements.txt -r requirements-dev.txt
+        python --version
+        python -c "import numpy; print('numpy %s' % numpy.__version__)"
+        # Source distribution
+        python setup.py sdist
+        # Built distribution (wheel)
+        python setup.py bdist_wheel $<SETUP_BDIST_WHEEL_ARGS>
+        # Install locally to support tests
+        pip install -e .
+        for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
+            auditwheel repair $whl -w ./dist/
+            rm $whl
+        done
+
+    - name: Upload dist
+      uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.whl
