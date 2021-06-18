@@ -13,10 +13,12 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  build_wheel_x86_64:
+    name: "Build and Deploy (x86_64 ${{ matrix.pyver }})"
+    strategy:
+      matrix:
+        pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
 
@@ -25,7 +27,6 @@ jobs:
           python --version
           python -m pip install --disable-pip-version-check --upgrade pip
           pip install -U -r requirements.txt -r requirements-dev.txt
-          python --version
           python -c "import numpy; print('numpy %s' % numpy.__version__)"
           # Source distribution
           python setup.py sdist
@@ -42,3 +43,40 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: dist/*.whl
+  build_wheel_aarch64:
+    name: "Build and Deploy (aarch64 ${{ matrix.pyver }})"
+    strategy:
+      matrix:
+        pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    env:
+      py: /opt/python/${{ matrix.pyver }}/bin/python
+      img: quay.io/pypa/manylinux2014_aarch64
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up QEMU
+      id: qemu
+      uses: docker/setup-qemu-action@v1
+    - name: Build Wheel
+      run: |
+            docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+            ${{ env.img }} \
+            bash -exc 'python --version
+            python -m pip install --disable-pip-version-check --upgrade pip
+            pip install -U -r requirements.txt -r requirements-dev.txt
+            python -c "import numpy; print('numpy %s' % numpy.__version__)"
+            # Built distribution (wheel)
+            python setup.py bdist_wheel
+            # Install locally to support tests
+            pip install -e .
+            pip install auditwheel
+            for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
+                auditwheel repair $whl -w ./dist/ --plat linux_x86_64
+                rm $whl
+            done
+    - name: Upload dist
+      uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.whl
