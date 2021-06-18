@@ -33,6 +33,7 @@ jobs:
           python setup.py bdist_wheel --plat-name x86_64
           # Install locally to support tests
           pip install -e .
+          pip install auditwheel
           for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
               auditwheel repair $whl -w ./dist/
               rm $whl
