@@ -38,7 +38,7 @@ jobs:
           pip install -e .
           pip install auditwheel
       - name: Repair wheel wheel
-        run: auditwheel repair dist/*.whl --wheel-dir wheelhouse
+        run: auditwheel repair dist/*.whl --wheel-dir wheelhouse --plat linux_x86_64
           #for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
            #   auditwheel repair $whl -w ./dist/ --plat linux_x86_64
             #  rm $whl
