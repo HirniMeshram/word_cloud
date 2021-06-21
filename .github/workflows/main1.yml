@@ -83,10 +83,11 @@ jobs:
             python setup.py bdist_wheel && \
             pip install -e . && \
             #pip install auditwheel && \
-            for whl in dist/*$(python -c \"import wheel.pep425tags as w; print(w.get_platform())\").whl; do
-                auditwheel repair $whl -w ./dist/ --plat linux_aarch64;
-                rm $whl;
-            done && \
+            auditwheel repair dist/*.whl --wheel-dir wheelhouse --plat linux_aarch64
+            #for whl in dist/*$(python -c \"import wheel.pep425tags as w; print(w.get_platform())\").whl; do
+             #   auditwheel repair $whl -w ./dist/ --plat linux_aarch64;
+              #  rm $whl;
+            #done && \
             pytest && \
             deactivate"
     - name: Upload dist
