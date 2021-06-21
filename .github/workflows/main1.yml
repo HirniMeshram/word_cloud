@@ -14,7 +14,7 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build_wheel_x86_64:
-    name: "Build and Deploy (x86_64 ${{ matrix.pyver }})"
+    name: "Build (x86_64 ${{ matrix.pyver }})"
     strategy:
       matrix:
         pyver: ['3.6', '3.7', '3.8', '3.9']
@@ -32,14 +32,11 @@ jobs:
           pip install -U -r requirements.txt -r requirements-dev.txt
       - name: Build manylinux wheels x86_64
         run: |
-          #python -c "import numpy; print('numpy %s' % numpy.__version__)"
-          # Source distribution
           python setup.py sdist
-          # Built distribution (wheel)
           python setup.py bdist_wheel
           # Install locally to support tests
           pip install -e .
-          #pip install auditwheel
+          pip install auditwheel
       - name: Repair wheel wheel
         run: auditwheel repair dist/*.whl --wheel-dir wheelhouse
           #for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
@@ -53,7 +50,7 @@ jobs:
         with:
           path: dist/*.whl
   build_wheel_aarch64:
-    name: "Build and Deploy (aarch64 ${{ matrix.pyver }})"
+    name: "Build (aarch64 ${{ matrix.pyver }})"
     strategy:
       matrix:
         pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
@@ -81,11 +78,11 @@ jobs:
             pip install --upgrade setuptools && \
             python -m pip install --disable-pip-version-check --upgrade pip && \
             pip install -U -r requirements.txt -r requirements-dev.txt && \
-            python -c \"import numpy; print('numpy %s' % numpy.__version__)\" && \
+            #python -c \"import numpy; print('numpy %s' % numpy.__version__)\" && \
             # Built distribution (wheel)
             python setup.py bdist_wheel && \
             pip install -e . && \
-            pip install auditwheel && \
+            #pip install auditwheel && \
             for whl in dist/*$(python -c \"import wheel.pep425tags as w; print(w.get_platform())\").whl; do
                 auditwheel repair $whl -w ./dist/ --plat linux_aarch64;
                 rm $whl;
