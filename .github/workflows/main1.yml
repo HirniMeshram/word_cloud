@@ -1,6 +1,5 @@
-name: Linux Build
+name: Linux Build and Test
 
-# Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -10,7 +9,7 @@ on:
 
 jobs:
   build_wheel_x86_64:
-    name: "Build ${{ matrix.pyver }} on ubuntu"
+    name: "Build x86_64 ${{ matrix.pyver }}"
     strategy:
       matrix:
         pyver: ['3.6', '3.7', '3.8', '3.9']
@@ -26,13 +25,12 @@ jobs:
           python -m pip install --disable-pip-version-check --upgrade pip
           pip install -U -r requirements.txt -r requirements-dev.txt
           pip install auditwheel
+          #Install locally to support tests
           pip install -e .
       - name: Building source distribution
         run: python setup.py sdist     
       - name: Building wheel
-        run: |
-          python setup.py bdist_wheel
-          #Install locally to support tests
+        run: python setup.py bdist_wheel
       - name: Repair wheel
         run: auditwheel repair dist/*.whl --wheel-dir wheelhouse --plat linux_x86_64
           #for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
@@ -46,7 +44,7 @@ jobs:
         with:
           path: dist/*.whl
   build_wheel_aarch64:
-    name: "Build ${{ matrix.pyver }}"
+    name: "Build aarch64 ${{ matrix.pyver }}"
     strategy:
       matrix:
         pyver: [cp36-cp36m, cp37-cp37m, cp38-cp38, cp39-cp39]
@@ -70,11 +68,10 @@ jobs:
             fi && \
             python -m pip install --disable-pip-version-check --upgrade pip && \
             pip install -U -r requirements.txt -r requirements-dev.txt && \
-            # Built distribution (wheel)
             python setup.py bdist_wheel && \
             pip install -e . && \
-            #pip install auditwheel && \
-            auditwheel repair dist/*.whl --wheel-dir wheelhouse --plat linux_aarch64
+            auditwheel repair dist/*.whl --wheel-dir wheelhouse && \
+            #--plat linux_aarch64
             pytest && \
             deactivate"
     - name: Upload dist
