@@ -26,13 +26,13 @@ jobs:
           python -m pip install --disable-pip-version-check --upgrade pip
           pip install -U -r requirements.txt -r requirements-dev.txt
           pip install auditwheel
+          pip install -e .
       - name: Building source distribution
         run: python setup.py sdist     
       - name: Building wheel
         run: |
           python setup.py bdist_wheel
           #Install locally to support tests
-          #pip install -e .
       - name: Repair wheel
         run: auditwheel repair dist/*.whl --wheel-dir wheelhouse --plat linux_x86_64
           #for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
@@ -65,12 +65,14 @@ jobs:
         args: |
             bash -c "${{ env.py }} -m pip install virtualenv && ${{ env.py }} -m venv .env && \
             source .env/bin/activate && \
-            pip install --upgrade setuptools && \
+            if \[ ${{ matrix.pyver }} == cp36-cp36m \] ; then
+              pip install --upgrade setuptools
+            fi && \
             python -m pip install --disable-pip-version-check --upgrade pip && \
             pip install -U -r requirements.txt -r requirements-dev.txt && \
             # Built distribution (wheel)
             python setup.py bdist_wheel && \
-            #pip install -e . && \
+            pip install -e . && \
             #pip install auditwheel && \
             auditwheel repair dist/*.whl --wheel-dir wheelhouse --plat linux_aarch64
             pytest && \
