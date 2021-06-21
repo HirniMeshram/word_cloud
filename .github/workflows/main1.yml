@@ -44,6 +44,8 @@ jobs:
               auditwheel repair $whl -w ./dist/ --plat linux_x86_64
               rm $whl
           done
+      - name: Test
+        run: pytest      
       - name: Upload dist
         uses: actions/upload-artifact@v2
         with:
@@ -86,6 +88,7 @@ jobs:
                 auditwheel repair $whl -w ./dist/ --plat linux_aarch64;
                 rm $whl;
             done && \
+            pytest && \
             deactivate"
     - name: Upload dist
       uses: actions/upload-artifact@v2
