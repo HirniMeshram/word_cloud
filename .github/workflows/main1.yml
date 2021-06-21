@@ -32,19 +32,21 @@ jobs:
           pip install -U -r requirements.txt -r requirements-dev.txt
       - name: Build manylinux wheels x86_64
         run: |
-          python -c "import numpy; print('numpy %s' % numpy.__version__)"
+          #python -c "import numpy; print('numpy %s' % numpy.__version__)"
           # Source distribution
           python setup.py sdist
           # Built distribution (wheel)
           python setup.py bdist_wheel
           # Install locally to support tests
           pip install -e .
-          pip install auditwheel
-          for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
-              auditwheel repair $whl -w ./dist/ --plat linux_x86_64
-              rm $whl
-          done
-      - name: Test
+          #pip install auditwheel
+      - name: Repair wheel wheel
+        run: auditwheel repair dist/*.whl --wheel-dir wheelhouse
+          #for whl in dist/*$(python -c "import wheel.pep425tags as w; print(w.get_platform())").whl; do
+           #   auditwheel repair $whl -w ./dist/ --plat linux_x86_64
+            #  rm $whl
+          #done
+      - name: Test with pytest
         run: pytest      
       - name: Upload dist
         uses: actions/upload-artifact@v2
