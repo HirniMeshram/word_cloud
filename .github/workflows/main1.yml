@@ -33,7 +33,7 @@ jobs:
       - name: Building wheel
         run: python setup.py bdist_wheel
       - name: Repair wheel
-        if: ${{ matrix.os }} == "ubuntu-latest"
+        if: matrix.os == 'ubuntu-latest'
         run: auditwheel repair dist/*.whl --wheel-dir wheelhouse --plat linux_x86_64
       - name: Test with pytest
         run: pytest      
