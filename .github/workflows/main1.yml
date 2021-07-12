@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.pyver }}
       - name: Install dependencies
         run: |
-          python -m pip install --disable-pip-version-check --upgrade pip
+          python -m pip install --upgrade pip
           pip install -U -r requirements.txt -r requirements-dev.txt
           pip install auditwheel
           #Install locally to support tests
