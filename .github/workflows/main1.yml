@@ -65,7 +65,7 @@ jobs:
             if \[ ${{ matrix.pyver }} == cp36-cp36m \] ; then
               pip install --upgrade setuptools
             fi && \
-            #python -m pip install --disable-pip-version-check --upgrade pip && \
+            python -m pip install --disable-pip-version-check --upgrade pip && \
             pip install -U -r requirements.txt -r requirements-dev.txt && \
             python setup.py bdist_wheel && \
             pip install -e . && \
