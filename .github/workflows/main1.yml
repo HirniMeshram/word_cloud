@@ -1,11 +1,6 @@
 name: Build and Test Wheel
 
-on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push]
 
 jobs:
   build_wheel_x86_64:
