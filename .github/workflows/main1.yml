@@ -70,7 +70,7 @@ jobs:
             pip install -U -r requirements.txt -r requirements-dev.txt && \
             python setup.py bdist_wheel && \
             pip install -e . && \
-            auditwheel repair dist/*.whl --wheel-dir wheelhouse && \
+            auditwheel repair dist/*.whl --wheel-dir dist && \
             pytest && \
             deactivate"
     - name: Upload dist
