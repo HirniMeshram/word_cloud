@@ -30,18 +30,18 @@ jobs:
         run: python setup.py bdist_wheel
       - name: Repair wheel
         if: matrix.os == 'ubuntu-latest'
-        run: auditwheel repair dist/*.whl --wheel-dir dist --plat linux_x86_64
+        run: auditwheel repair dist/*.whl --wheel-dir wheelhouse --plat linux_x86_64
       - name: Test with pytest
         run: pytest      
       - name: Upload Wheel
         uses: actions/upload-artifact@v2
         with:
-          path: dist/*.whl
+          path: wheelhouse/*.whl
       - name: Deploy Wheel
         run: |
             pip install twine
-            ls dist
-            twine upload -u $PYPI_USER -p $PYPI_PASSWORD --skip-existing dist/*
+            ls wheelhouse
+            twine upload -u $PYPI_USER -p $PYPI_PASSWORD --skip-existing wheelhouse/*
 
   build_wheel_aarch64:
     name: "Build aarch64 ${{ matrix.pyver }}"
@@ -70,15 +70,15 @@ jobs:
             pip install -U -r requirements.txt -r requirements-dev.txt && \
             python setup.py bdist_wheel && \
             pip install -e . && \
-            auditwheel repair dist/*.whl --wheel-dir dist && \
+            auditwheel repair dist/*.whl --wheel-dir wheelhouse && \
             pytest && \
             deactivate"
     - name: Upload dist
       uses: actions/upload-artifact@v2
       with:
-        path: dist/*.whl
+        path: wheelhouse/*.whl
     - name: Deploy Wheel
       run: |
            pip install twine
-           ls dist
-           twine upload -u $PYPI_USER -p $PYPI_PASSWORD --skip-existing dist/*
+           ls wheelhouse
+           twine upload -u $PYPI_USER -p $PYPI_PASSWORD --skip-existing wheelhouse/*
