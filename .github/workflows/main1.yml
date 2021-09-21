@@ -36,6 +36,11 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: dist/*.whl
+      - name: Deploy Wheel
+        run: |
+            pip install twine
+            ls dist
+            twine upload -u $PYPI_USER -p $PYPI_PASSWORD --skip-existing dist/*
 
   build_wheel_aarch64:
     name: "Build aarch64 ${{ matrix.pyver }}"
@@ -71,3 +76,8 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         path: dist/*.whl
+    - name: Deploy Wheel
+      run: |
+           pip install twine
+           ls dist
+           twine upload -u $PYPI_USER -p $PYPI_PASSWORD --skip-existing dist/*
